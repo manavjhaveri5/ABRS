@@ -36,7 +36,7 @@ rectangles = [
     pygame.Rect(170, 20, 120, 100), # "Overhead Pass"
     pygame.Rect(320, 20, 120, 100), # "Bounce Pass"
     pygame.Rect(60, 180, 160, 100), # "Random Mode"
-    pygame.Rect(260, 180, 160, 100) # "Reset"
+    pygame.Rect(1260, 1180, 1160, 1100) # "Reset"
 ]
 
 rectangle_names = [
