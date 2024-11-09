@@ -1,7 +1,6 @@
 import threading
 from io_system import start_io_system
-from pan_control import app
-
+from camera_control import app, start_camera_control  # Updated import to reflect new function name
 
 def main():
     """
@@ -18,9 +17,8 @@ def main():
     
     # Wait for the selection result to determine next steps
     if result == 'Chest Pass':
-        print("Chest Pass selected, starting pan control phase...")
-        from pan_control import start_pan_control
-        start_pan_control()
+        print("Chest Pass selected, starting camera control phase...")
+        start_camera_control()  # Updated to call the new `start_camera_control` function
     elif result == 'Reset':
         print("Resetting system...")
         # You could add any specific reset logic here if needed
