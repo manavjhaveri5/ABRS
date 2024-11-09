@@ -10,7 +10,7 @@ os.environ["DISPLAY"] = ":0"
 pygame.init()
 
 # Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
-screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((320, 480), pygame.FULLSCREEN)
 
 # Background color and text properties
 black = (0, 0, 0)
@@ -29,7 +29,7 @@ font = pygame.font.Font(pygame.font.match_font('arial'), 17)
 
 # Define rectangles for button layout
 rectangles = [
-    pygame.Rect(0, 20, 120, 100),  # "Chest Pass"
+    pygame.Rect(20, 20, 120, 100),  # "Chest Pass"
     pygame.Rect(170, 20, 120, 100), # "Overhead Pass"
     pygame.Rect(320, 20, 120, 100), # "Bounce Pass"
     pygame.Rect(60, 180, 160, 100), # "Random Mode"
