@@ -10,7 +10,7 @@ os.environ["DISPLAY"] = ":0"
 pygame.init()
 
 # Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
-screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
 
 # Background color and text properties
 black = (0, 0, 0)

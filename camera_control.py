@@ -91,7 +91,7 @@ def display_stop_button():
     """Displays a Pygame window with a Stop button during camera control, along with the step size."""
     global stop_panning, step_size
     pygame.init()
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
     pygame.display.set_caption('Camera Control')
     clock = pygame.time.Clock()
 
