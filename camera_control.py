@@ -87,6 +87,39 @@ def gen():
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + current_frame + b'\r\n\r\n')
 
+def display_stop_button():
+    """Displays a Pygame window with a Stop button during camera control."""
+    global stop_panning
+    pygame.init()
+    screen = pygame.display.set_mode((640, 480))
+    pygame.display.set_caption('Stop Camera Control')
+    stop_button = pygame.Rect(540, 10, 80, 40)
+    red = (255, 0, 0)
+    white = (255, 255, 255)
+    font = pygame.font.Font(pygame.font.match_font('arial'), 20)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                stop_panning = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if stop_button.collidepoint(event.pos):
+                    print("Stop button clicked, exiting...")
+                    running = False
+                    stop_panning = True
+
+        # Draw stop button
+        screen.fill((0, 0, 0))
+        pygame.draw.rect(screen, red, stop_button)
+        stop_text = font.render('Stop', True, white)
+        stop_text_rect = stop_text.get_rect(center=stop_button.center)
+        screen.blit(stop_text, stop_text_rect)
+        pygame.display.update()
+
+    pygame.quit()
+
 def start_camera_control():
     setup_motor_gpio()
     # Start the video processing in a separate thread
@@ -105,7 +138,6 @@ def start_camera_control():
 
     cap.release()
     cleanup_motor_gpio()
-
 
 if __name__ == "__main__":
     try:
