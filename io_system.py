@@ -10,7 +10,7 @@ os.environ["DISPLAY"] = ":0"
 pygame.init()
 
 # Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
-screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN | pygame.NOFRAME)
+screen = pygame.display.set_mode((480, 320))
 
 
 
