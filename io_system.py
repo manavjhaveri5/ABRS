@@ -74,7 +74,7 @@ def countdown_display(start=5):
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
     for i in range(start, 0, -1):
         screen.fill(black)
-        countdown_text = font.render(f"Chest Pass Mode selected. Turret starting in {i} seconds...", True, white)
+        countdown_text = font.render(f"Chest Pass selected. Turret starting in {i} ...", True, white)
         countdown_text_rect = countdown_text.get_rect(center=(240, 160))
         screen.blit(countdown_text, countdown_text_rect)
         pygame.display.update()
