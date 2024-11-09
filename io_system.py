@@ -102,7 +102,6 @@ def start_io_system():
 
                         if i == 0:  # "Chest Pass" selected
                             countdown_display(5)  # Display countdown before starting
-                            pygame.quit()  # Quit Pygame after showing the message
                             return 'Chest Pass'
                         elif i == 4:  # "Reset" button selected
                             display_message('Resetting...', color=(255, 0, 0))
@@ -116,17 +115,9 @@ def start_io_system():
     pygame.quit()
     sys.exit()
 
-# Function for the second screen with stop button and step print
-
 def display_stop_screen():
     """Displays a fullscreen Pygame window with a stop button and step information."""
-    # Ensure environment variable is set
-    os.environ["DISPLAY"] = ":0"
-    
-    # Re-initialize pygame
-    pygame.init()
-    
-    # Set up the full-screen display for the stop screen
+    # No need to quit pygame, just continue with the existing pygame session
     stop_screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
     stop_screen.fill((0, 0, 0))  # Fill the screen with black
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
