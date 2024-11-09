@@ -29,7 +29,7 @@ font = pygame.font.Font(pygame.font.match_font('arial'), 17)
 
 # Define rectangles for button layout
 rectangles = [
-    pygame.Rect(20, 20, 120, 100),  # "Chest Pass"
+    pygame.Rect(0, 20, 120, 100),  # "Chest Pass"
     pygame.Rect(170, 20, 120, 100), # "Overhead Pass"
     pygame.Rect(320, 20, 120, 100), # "Bounce Pass"
     pygame.Rect(60, 180, 160, 100), # "Random Mode"
