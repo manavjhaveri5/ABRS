@@ -89,13 +89,23 @@ def gen():
 
 def start_camera_control():
     setup_motor_gpio()
+    # Start the video processing in a separate thread
     video_thread = threading.Thread(target=process_video)
     video_thread.daemon = True
     video_thread.start()
 
+    # Start the stop button overlay in a separate thread
+    button_thread = threading.Thread(target=display_stop_button)
+    button_thread.daemon = True
+    button_thread.start()
+
+    # Wait for threads to finish
     video_thread.join()
+    button_thread.join()
+
     cap.release()
     cleanup_motor_gpio()
+
 
 if __name__ == "__main__":
     try:
