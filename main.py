@@ -1,6 +1,6 @@
 import threading
-from io_system import start_io_system
-from camera_control import app, start_camera_control, display_stop_screen  # Updated import to reflect new function name
+from io_system import start_io_system,  display_stop_screen
+from camera_control import app, start_camera_control  # Updated import to reflect new function name
 
 def main():
     """
