@@ -10,7 +10,7 @@ os.environ["DISPLAY"] = ":0"
 pygame.init()
 
 # Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
-screen = pygame.display.set_mode((640, 480), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
 
 # Background color and text properties
 black = (0, 0, 0)
@@ -74,7 +74,7 @@ def countdown_display(start=5):
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
     for i in range(start, 0, -1):
         screen.fill(black)
-        countdown_text = font.render(f"Chest Pass Mode selected. Turret starting in {i} seconds...", True, white)
+        countdown_text = font.render(f"Chest Pass selected. Turret starting in {i}...", True, white)
         countdown_text_rect = countdown_text.get_rect(center=(240, 160))
         screen.blit(countdown_text, countdown_text_rect)
         pygame.display.update()

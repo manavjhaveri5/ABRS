@@ -6,6 +6,7 @@ import time
 import pygame
 from motor_control import setup_motor_gpio, move_motor, cleanup_motor_gpio
 
+
 # Flask setup
 app = Flask(__name__)
 
@@ -101,6 +102,9 @@ def display_stop_button():
     button_hover_color = (200, 0, 0)  # Darker red for hover
     text_color = (255, 255, 255)  # White for text
     step_size_color = (0, 255, 0)  # Green for step size text
+    black = (0, 0, 0)
+    screen.fill(black)
+
 
     # Fonts
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
