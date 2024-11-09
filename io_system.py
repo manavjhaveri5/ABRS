@@ -69,6 +69,17 @@ def display_message(message, color=(255, 255, 255), duration=3):
     pygame.display.update()
     time.sleep(duration)
 
+def countdown_display(start=5):
+    """Displays a countdown from the specified start value down to 1."""
+    font = pygame.font.Font(pygame.font.match_font('arial'), 24)
+    for i in range(start, 0, -1):
+        screen.fill(black)
+        countdown_text = font.render(f"Chest Pass Mode selected. Turret starting in {i} seconds...", True, white)
+        countdown_text_rect = countdown_text.get_rect(center=(240, 160))
+        screen.blit(countdown_text, countdown_text_rect)
+        pygame.display.update()
+        time.sleep(1)
+
 def start_io_system():
     """Handles the user interaction for the touchscreen interface."""
     running = True
@@ -87,9 +98,10 @@ def start_io_system():
                         print(f"Button {rectangle_names[i]} pressed, outputting state {selected_button}")
                         
                         # Display message on the screen
-                        display_message(f"{rectangle_names[i]} selected", color=colors[i])
+                        display_message(f"{rectangle_names[i]} selected", color=white if i == 0 else colors[i])
 
                         if i == 0:  # "Chest Pass" selected
+                            countdown_display(5)  # Display countdown before starting
                             pygame.quit()  # Quit Pygame after showing the message
                             return 'Chest Pass'
                         elif i == 4:  # "Reset" button selected
@@ -103,3 +115,4 @@ def start_io_system():
 
     pygame.quit()
     sys.exit()
+
