@@ -10,9 +10,8 @@ os.environ["DISPLAY"] = ":0"
 pygame.init()
 
 # Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
-display_info = pygame.display.Info()
-width, height = display_info.current_w, display_info.current_h
-screen = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN | pygame.NOFRAME)
+
 
 
 # Background color and text properties
@@ -36,7 +35,7 @@ rectangles = [
     pygame.Rect(170, 20, 120, 100), # "Overhead Pass"
     pygame.Rect(320, 20, 120, 100), # "Bounce Pass"
     pygame.Rect(60, 180, 160, 100), # "Random Mode"
-    pygame.Rect(1260, 1180, 1160, 1100) # "Reset"
+    pygame.Rect(260, 180, 160, 100) # "Reset"
 ]
 
 rectangle_names = [
