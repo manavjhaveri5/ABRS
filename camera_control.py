@@ -32,9 +32,10 @@ K_p = 0.05
 
 current_frame = None
 stop_panning = False
+step_size = 0
 
 def process_video():
-    global current_frame, stop_panning
+    global current_frame, stop_panning, step_size
     while cap.isOpened() and not stop_panning:
         success, frame = cap.read()
 
@@ -53,9 +54,8 @@ def process_video():
                     x, y, w, h = cv2.boundingRect(largest_contour)
                     center_x = x + w // 2
                     offset_x = center_x - frame_center_x
-                    print(f"Offset X: {offset_x}")
-
                     step_size = int(K_p * abs(offset_x))
+
                     if abs(offset_x) > 20:
                         if offset_x > 0:
                             move_motor(step_size, 'R')
@@ -88,35 +88,59 @@ def gen():
                    b'Content-Type: image/jpeg\r\n\r\n' + current_frame + b'\r\n\r\n')
 
 def display_stop_button():
-    """Displays a Pygame window with a Stop button during camera control."""
-    global stop_panning
+    """Displays a Pygame window with a Stop button during camera control, along with the step size."""
+    global stop_panning, step_size
     pygame.init()
     screen = pygame.display.set_mode((640, 480))
-    pygame.display.set_caption('Stop Camera Control')
-    stop_button = pygame.Rect(540, 10, 80, 40)
-    red = (255, 0, 0)
-    white = (255, 255, 255)
-    font = pygame.font.Font(pygame.font.match_font('arial'), 20)
+    pygame.display.set_caption('Camera Control')
+    clock = pygame.time.Clock()
+
+    # Colors
+    background_color = (30, 30, 30)  # Dark grey background
+    button_color = (255, 0, 0)  # Red color for stop button
+    button_hover_color = (200, 0, 0)  # Darker red for hover
+    text_color = (255, 255, 255)  # White for text
+    step_size_color = (0, 255, 0)  # Green for step size text
+
+    # Fonts
+    font = pygame.font.Font(pygame.font.match_font('arial'), 24)
+
+    # Stop button properties
+    button_radius = 60
+    button_center = (540, 80)  # x, y coordinates for button center
 
     running = True
     while running:
+        screen.fill(background_color)  # Fill screen with background color
+
+        # Draw stop button
+        mouse_pos = pygame.mouse.get_pos()
+        button_color_to_use = button_hover_color if (mouse_pos[0] - button_center[0]) ** 2 + (mouse_pos[1] - button_center[1]) ** 2 < button_radius ** 2 else button_color
+        pygame.draw.circle(screen, button_color_to_use, button_center, button_radius)
+
+        # Draw stop text on button
+        stop_text = font.render('Stop', True, text_color)
+        stop_text_rect = stop_text.get_rect(center=button_center)
+        screen.blit(stop_text, stop_text_rect)
+
+        # Display step size on the screen
+        step_size_text = font.render(f'Step Size: {step_size}', True, step_size_color)
+        step_size_rect = step_size_text.get_rect(center=(320, 240))
+        screen.blit(step_size_text, step_size_rect)
+
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 stop_panning = True
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if stop_button.collidepoint(event.pos):
+                if (mouse_pos[0] - button_center[0]) ** 2 + (mouse_pos[1] - button_center[1]) ** 2 < button_radius ** 2:
                     print("Stop button clicked, exiting...")
                     running = False
                     stop_panning = True
 
-        # Draw stop button
-        screen.fill((0, 0, 0))
-        pygame.draw.rect(screen, red, stop_button)
-        stop_text = font.render('Stop', True, white)
-        stop_text_rect = stop_text.get_rect(center=stop_button.center)
-        screen.blit(stop_text, stop_text_rect)
         pygame.display.update()
+        clock.tick(30)  # Limit the frame rate to 30 FPS
 
     pygame.quit()
 
