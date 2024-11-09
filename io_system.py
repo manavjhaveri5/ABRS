@@ -9,11 +9,8 @@ os.environ["DISPLAY"] = ":0"
 # Initialize pygame
 pygame.init()
 
-# Set up the display in fullscreen mode
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-
-# Get screen dimensions
-screen_width, screen_height = screen.get_size()
+# Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
+screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
 
 # Background color and text properties
 black = (0, 0, 0)
@@ -22,24 +19,21 @@ screen.fill(black)
 
 colors = [
     (255, 0, 0),    # Red for "Chest Pass"
-    (0, 100, 0),    # Green for "Overhead Pass"
-    (0, 0, 255),    # Blue for "Bounce Pass"
+    (0, 100, 0),    # Green
+    (0, 0, 255),    # Blue
     (200, 200, 0),  # Yellow for "Random Mode"
     (255, 165, 0)   # Orange for "Reset"
 ]
 
-font = pygame.font.Font(pygame.font.match_font('arial'), int(screen_height * 0.05))
+font = pygame.font.Font(pygame.font.match_font('arial'), 17)
 
-# Define rectangles for button layout (relative to screen size for better scaling)
-button_width = screen_width // 3 - 20
-button_height = screen_height // 4 - 20
-
+# Define rectangles for button layout
 rectangles = [
-    pygame.Rect(20, 20, button_width, button_height),  # "Chest Pass"
-    pygame.Rect(20 + button_width + 20, 20, button_width, button_height),  # "Overhead Pass"
-    pygame.Rect(20 + 2 * (button_width + 20), 20, button_width, button_height),  # "Bounce Pass"
-    pygame.Rect(20, 40 + button_height, button_width * 1.5, button_height),  # "Random Mode"
-    pygame.Rect(20 + button_width * 1.5 + 40, 40 + button_height, button_width * 1.5, button_height)  # "Reset"
+    pygame.Rect(20, 20, 120, 100),  # "Chest Pass"
+    pygame.Rect(170, 20, 120, 100), # "Overhead Pass"
+    pygame.Rect(320, 20, 120, 100), # "Bounce Pass"
+    pygame.Rect(60, 180, 160, 100), # "Random Mode"
+    pygame.Rect(260, 180, 160, 100) # "Reset"
 ]
 
 rectangle_names = [
@@ -56,7 +50,7 @@ selected_button = None
 def draw_buttons():
     """Draws the interactive buttons on the screen."""
     for i, rect in enumerate(rectangles):
-        pygame.draw.rect(screen, colors[i], rect, border_radius=corner_radius)
+        pygame.draw.rect(screen, colors[i], rect, corner_radius)
         placeholder_text = font.render(rectangle_names[i], True, white)
         text_rect = placeholder_text.get_rect(center=rect.center)
         screen.blit(placeholder_text, text_rect)
@@ -67,21 +61,21 @@ pygame.display.update()
 
 def display_message(message, color=(255, 255, 255), duration=3):
     """Displays a temporary message on the screen."""
-    font = pygame.font.Font(pygame.font.match_font('arial'), int(screen_height * 0.08))
+    font = pygame.font.Font(pygame.font.match_font('arial'), 24)
     screen.fill(black)
     message_text = font.render(message, True, color)
-    message_rect = message_text.get_rect(center=(screen_width // 2, screen_height // 2))
+    message_rect = message_text.get_rect(center=(240, 160))
     screen.blit(message_text, message_rect)
     pygame.display.update()
     time.sleep(duration)
 
 def countdown_display(start=5):
     """Displays a countdown from the specified start value down to 1."""
-    font = pygame.font.Font(pygame.font.match_font('arial'), int(screen_height * 0.08))
+    font = pygame.font.Font(pygame.font.match_font('arial'), 24)
     for i in range(start, 0, -1):
         screen.fill(black)
-        countdown_text = font.render(f"Chest Pass selected. Turret starting in {i} ...", True, white)
-        countdown_text_rect = countdown_text.get_rect(center=(screen_width // 2, screen_height // 2))
+        countdown_text = font.render(f"Chest Pass selected. Turret starting in {i}...", True, white)
+        countdown_text_rect = countdown_text.get_rect(center=(240, 160))
         screen.blit(countdown_text, countdown_text_rect)
         pygame.display.update()
         time.sleep(1)
