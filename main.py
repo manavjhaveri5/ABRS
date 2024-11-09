@@ -1,5 +1,5 @@
 import threading
-from io_system import start_io_system,  display_stop_screen
+from io_system import start_io_system
 from camera_control import app, start_camera_control  # Updated import to reflect new function name
 
 def main():
@@ -19,7 +19,6 @@ def main():
     if result == 'Chest Pass':
         print("Chest Pass selected, starting camera control phase...")
         start_camera_control()  # Updated to call the new `start_camera_control` function
-        display_stop_screen()  # Launch the stop button screen in full screen after control starts
 
     elif result == 'Reset':
         print("Resetting system...")
