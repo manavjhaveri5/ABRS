@@ -97,14 +97,12 @@ def display_stop_button():
     clock = pygame.time.Clock()
 
     # Colors
-    background_color = (30, 30, 30)  # Dark grey background
+    background_color = (0, 0, 0)  # Dark grey background
     button_color = (255, 0, 0)  # Red color for stop button
     button_hover_color = (200, 0, 0)  # Darker red for hover
     text_color = (255, 255, 255)  # White for text
     step_size_color = (0, 255, 0)  # Green for step size text
-    black = (0, 0, 0)
-    screen.fill(black)
-
+    
 
     # Fonts
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
