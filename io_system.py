@@ -116,3 +116,42 @@ def start_io_system():
     pygame.quit()
     sys.exit()
 
+# Function for the second screen with stop button and step print
+def display_stop_screen():
+    """Displays a fullscreen Pygame window with a stop button and step information."""
+    pygame.init()
+    stop_screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)  # Set up the fullscreen display for stop screen
+    stop_screen.fill(black)
+    font = pygame.font.Font(pygame.font.match_font('arial'), 24)
+
+    stop_button_radius = 60
+    stop_button_center = (240, 160)
+    red = (255, 0, 0)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                # Check if the stop button was clicked
+                if ((mouse_pos[0] - stop_button_center[0]) ** 2 + (mouse_pos[1] - stop_button_center[1]) ** 2) ** 0.5 < stop_button_radius:
+                    print("Stop button pressed")
+                    running = False
+
+        # Draw the stop button
+        pygame.draw.circle(stop_screen, red, stop_button_center, stop_button_radius)
+        stop_text = font.render("STOP", True, white)
+        stop_text_rect = stop_text.get_rect(center=stop_button_center)
+        stop_screen.blit(stop_text, stop_text_rect)
+
+        # Example step size text (can be updated with actual values during the main loop)
+        step_size_text = font.render("Step Size: 0", True, white)
+        step_size_rect = step_size_text.get_rect(center=(240, 280))
+        stop_screen.blit(step_size_text, step_size_rect)
+
+        pygame.display.update()
+
+    pygame.quit()
+    sys.exit()
