@@ -9,10 +9,8 @@ os.environ["DISPLAY"] = ":0"
 # Initialize pygame
 pygame.init()
 
-# Set up the display (e.g., 480x320 for a Waveshare 3.5-inch LCD)
-screen = pygame.display.set_mode((480, 320))
-
-
+# Set up the display in fullscreen mode
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 # Background color and text properties
 black = (0, 0, 0)
@@ -29,7 +27,8 @@ colors = [
 
 font = pygame.font.Font(pygame.font.match_font('arial'), 17)
 
-# Define rectangles for button layout
+# Define rectangles for button layout (relative to screen size for better scaling)
+screen_width, screen_height = screen.get_size()
 rectangles = [
     pygame.Rect(20, 20, 120, 100),  # "Chest Pass"
     pygame.Rect(170, 20, 120, 100), # "Overhead Pass"
@@ -66,7 +65,7 @@ def display_message(message, color=(255, 255, 255), duration=3):
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
     screen.fill(black)
     message_text = font.render(message, True, color)
-    message_rect = message_text.get_rect(center=(240, 160))
+    message_rect = message_text.get_rect(center=(screen_width // 2, screen_height // 2))
     screen.blit(message_text, message_rect)
     pygame.display.update()
     time.sleep(duration)
@@ -77,7 +76,7 @@ def countdown_display(start=5):
     for i in range(start, 0, -1):
         screen.fill(black)
         countdown_text = font.render(f"Chest Pass selected. Turret starting in {i} ...", True, white)
-        countdown_text_rect = countdown_text.get_rect(center=(240, 160))
+        countdown_text_rect = countdown_text.get_rect(center=(screen_width // 2, screen_height // 2))
         screen.blit(countdown_text, countdown_text_rect)
         pygame.display.update()
         time.sleep(1)
