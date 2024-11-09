@@ -117,19 +117,29 @@ def start_io_system():
     sys.exit()
 
 # Function for the second screen with stop button and step print
+
 def display_stop_screen():
     """Displays a fullscreen Pygame window with a stop button and step information."""
+    # Ensure environment variable is set
+    os.environ["DISPLAY"] = ":0"
+    
+    # Re-initialize pygame
     pygame.init()
-    stop_screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)  # Set up the fullscreen display for stop screen
-    stop_screen.fill(black)
+    
+    # Set up the full-screen display for the stop screen
+    stop_screen = pygame.display.set_mode((480, 320), pygame.FULLSCREEN)
+    stop_screen.fill((0, 0, 0))  # Fill the screen with black
     font = pygame.font.Font(pygame.font.match_font('arial'), 24)
 
+    # Stop button properties
     stop_button_radius = 60
     stop_button_center = (240, 160)
     red = (255, 0, 0)
+    white = (255, 255, 255)
 
     running = True
     while running:
+        # Event handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -141,6 +151,7 @@ def display_stop_screen():
                     running = False
 
         # Draw the stop button
+        stop_screen.fill((0, 0, 0))  # Clear screen each frame
         pygame.draw.circle(stop_screen, red, stop_button_center, stop_button_radius)
         stop_text = font.render("STOP", True, white)
         stop_text_rect = stop_text.get_rect(center=stop_button_center)
@@ -151,6 +162,7 @@ def display_stop_screen():
         step_size_rect = step_size_text.get_rect(center=(240, 280))
         stop_screen.blit(step_size_text, step_size_rect)
 
+        # Update the display
         pygame.display.update()
 
     pygame.quit()
