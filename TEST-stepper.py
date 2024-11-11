@@ -29,9 +29,10 @@ def test_motor(step_delay):
     time.sleep(1)
 
 try:
-    # Simple test loop
+    # Simple test loop with time limit
     print("Testing motor...")
-    for _ in range(5):  # Loop 5 times for testing
+    start_time = time.time()
+    while time.time() - start_time < 5:  # Run for 5 seconds
         test_motor(step_delay=0.01)
 
 finally:
