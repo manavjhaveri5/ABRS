@@ -34,12 +34,12 @@ K_p = 0.05
 current_frame = None
 stop_panning = False
 step_size = 0
+previous_center_x = frame_center_x  # Initialize with frame center as the starting point
 
 def process_video():
-    global current_frame, stop_panning, step_size
+    global current_frame, stop_panning, step_size, previous_center_x
     while cap.isOpened() and not stop_panning:
         success, frame = cap.read()
-
         if success:
             frameHSV = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
             lowerBound = np.array([hueLow, satLow, valLow])
@@ -57,14 +57,18 @@ def process_video():
                     offset_x = center_x - frame_center_x
                     step_size = int(K_p * abs(offset_x))
 
-                    if abs(offset_x) > 20:
-                        if offset_x > 0:
-                            move_motor(step_size, 'R')
-                        else:
-                            move_motor(step_size, 'L')
+                    # Determine movement direction
+                    if center_x < previous_center_x:  # Object moved left
+                        move_motor(step_size, 'L')
+                    elif center_x > previous_center_x:  # Object moved right
+                        move_motor(step_size, 'R')
 
+                    # Draw the bounding box and center point
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                     cv2.circle(frame, (center_x, y + h // 2), 5, (0, 255, 0), -1)
+
+                    # Update previous center position
+                    previous_center_x = center_x
 
             ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 30])
             if not ret:
