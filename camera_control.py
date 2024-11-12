@@ -18,9 +18,9 @@ if not cap.isOpened():
     exit()
 
 # Set lower resolution for processing load
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-cap.set(cv2.CAP_PROP_FPS, 10)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+cap.set(cv2.CAP_PROP_FPS, 5)
 
 # HSV color thresholding values for red
 hueLow, hueHigh = 170, 180
@@ -70,7 +70,7 @@ def process_video():
                     # Update previous center position
                     previous_center_x = center_x
 
-            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 30])
+            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 20])
             if not ret:
                 print("Error: Frame encoding failed")
             else:
