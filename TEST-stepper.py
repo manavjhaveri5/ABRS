@@ -14,7 +14,7 @@ GPIO.setup(STEP_PIN, GPIO.OUT)
 GPIO.output(DIR_PIN, GPIO.HIGH)  # HIGH for one direction, LOW for the opposite
 
 # Set duration for motor run
-run_duration = 5  # in seconds
+run_duration = 10  # in seconds
 start_time = time.time()
 
 try:
