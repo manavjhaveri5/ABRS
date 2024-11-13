@@ -1,36 +1,55 @@
+"""
+This Raspberry Pi code was developed by newbiely.com
+This Raspberry Pi code is made available for public use without any restriction
+For comprehensive instructions and wiring diagrams, please visit:
+https://newbiely.com/tutorials/raspberry-pi/raspberry-pi-limit-switch
+"""
+
+
 import RPi.GPIO as GPIO
-import time
 
-# Define GPIO pins for the limit switches
-LIMIT_SWITCH_1 = 26  # Replace with your actual GPIO pin
-LIMIT_SWITCH_2 = 19  # Replace with your actual GPIO pin
-
-# Setup GPIO mode
+# Set the GPIO mode to BCM
 GPIO.setmode(GPIO.BCM)
 
-# Setup limit switches as inputs with internal pull-up resistors
-GPIO.setup(LIMIT_SWITCH_1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(LIMIT_SWITCH_2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+# Define the GPIO pin for your button
+SWITCH_PIN = 26
+
+# Define debounce time in milliseconds
+DEBOUNCE_TIME_MS = 200  # 200 milliseconds
+
+# Set the initial state and pull-up resistor for the button
+GPIO.setup(SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# Initialize the button state and previous state
+switch_state = GPIO.input(SWITCH_PIN)
+prev_switch_state = switch_state
+
+# Define a function to handle button presses
+def button_callback(channel):
+    global switch_state
+    switch_state = GPIO.input(SWITCH_PIN)
+
+# Add an event listener for the button press
+GPIO.add_event_detect(SWITCH_PIN, GPIO.BOTH, callback=button_callback, bouncetime=DEBOUNCE_TIME_MS)
 
 try:
-    print("Press the limit switches to test their functionality.")
+    # Main loop
     while True:
-        # Read the state of each limit switch
-        switch1_state = GPIO.input(LIMIT_SWITCH_1)
-        switch2_state = GPIO.input(LIMIT_SWITCH_2)
+        # Check if the button state has changed
+        if switch_state != prev_switch_state:
+            if switch_state == GPIO.HIGH:
+                print("The limit switch: TOUCHED -> UNTOUCHED")
+            else:
+                print("The limit switch: UNTOUCHED -> TOUCHED")
+            
+            prev_switch_state = switch_state
 
-        # Print switch status; the input will be LOW (False) when pressed
-        if switch1_state == GPIO.LOW:
-            print("Limit Switch 1 Pressed")
-        if switch2_state == GPIO.LOW:
-            print("Limit Switch 2 Pressed")
-        
-        # Small delay to debounce
-        time.sleep(0.1)
+
+        if switch_state == GPIO.HIGH:
+            print("The limit switch: UNTOUCHED")
+        else:
+            print("The limit switch: TOUCHED")
 
 except KeyboardInterrupt:
-    print("Exiting program")
-
-finally:
-    # Clean up GPIO settings
+    # Clean up GPIO on exit
     GPIO.cleanup()
