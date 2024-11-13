@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
 # Define GPIO pins
-DIR_PIN = 20  # Use GPIO20 (pin 38) as defined in your setup
-STEP_PIN = 21  # Use GPIO21 (pin 40) as defined in your setup
+DIR_PIN = 21  # Use GPIO21 as defined in your setup
+STEP_PIN = 13  # Use GPIO13 as defined in your setup
 
 # Setup GPIO mode
 GPIO.setmode(GPIO.BCM)
@@ -21,9 +21,9 @@ try:
     while time.time() - start_time < run_duration:
         # Perform one step
         GPIO.output(STEP_PIN, GPIO.HIGH)
-        time.sleep(0.0005)  # 500 microseconds
+        time.sleep(0.001)  # Adjusted to 1000 microseconds
         GPIO.output(STEP_PIN, GPIO.LOW)
-        time.sleep(0.0005)  # 500 microseconds
+        time.sleep(0.001)  # Adjusted to 1000 microseconds
 except KeyboardInterrupt:
     print("Stopped by User")
 finally:
