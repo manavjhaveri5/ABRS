@@ -39,17 +39,17 @@ try:
         # Check if the button state has changed
         if switch_state != prev_switch_state:
             if switch_state == GPIO.HIGH:
-                print("The limit switch: TOUCHED -> UNTOUCHED")
+                print("UNTOUCHED")
             else:
-                print("The limit switch: UNTOUCHED -> TOUCHED")
+                print("TOUCHED")
             
             prev_switch_state = switch_state
 
 
         if switch_state == GPIO.HIGH:
-            print("The limit switch: UNTOUCHED")
+            print("UNTOUCHED")
         else:
-            print("The limit switch: TOUCHED")
+            print(" TOUCHED")
 
 except KeyboardInterrupt:
     # Clean up GPIO on exit
