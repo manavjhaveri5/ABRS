@@ -3,7 +3,7 @@ import time
 
 # Define GPIO pins
 DIR_PIN = 5  # DIR+
-STEP_PIN = 13  # PUL+
+STEP_PIN = 12  # PUL+
 
 # Setup GPIO mode
 GPIO.setmode(GPIO.BCM)
