@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
 # Define GPIO pins
-DIR_PIN = 21  # Use GPIO21 as defined in your setup
-STEP_PIN = 13  # Use GPIO13 as defined in your setup
+DIR_PIN = 5  # DIR+
+STEP_PIN = 13  # PUL+
 
 # Setup GPIO mode
 GPIO.setmode(GPIO.BCM)
