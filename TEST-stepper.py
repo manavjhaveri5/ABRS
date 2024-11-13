@@ -1,9 +1,13 @@
 import RPi.GPIO as GPIO
 import time
 
-# Define GPIO pins
+ ##PAN MOTOR
 DIR_PIN = 5  # DIR+
 STEP_PIN = 12  # PUL+
+
+ ##TILT MOTOR
+DIR_PIN = 21  # DIR+
+STEP_PIN = 13  # PUL+
 
 # Setup GPIO mode
 GPIO.setmode(GPIO.BCM)
