@@ -12,11 +12,11 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
 # Define the GPIO pin for your button
-#SWITCH_PIN = 19 #SWITCH 1
-SWITCH_PIN = 26 #SWITCH 2
+SWITCH_PIN = 19 #SWITCH 1
+#SWITCH_PIN = 26 #SWITCH 2
 
 # Define debounce time in milliseconds
-DEBOUNCE_TIME_MS = 300  # 200 milliseconds
+DEBOUNCE_TIME_MS = 200  # 200 milliseconds
 
 # Set the initial state and pull-up resistor for the button
 GPIO.setup(SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
