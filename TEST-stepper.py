@@ -1,41 +1,31 @@
 import RPi.GPIO as GPIO
 import time
 
-# GPIO setup
-DIR_PIN = 21       # GPIO pin for direction
-STEP_PIN = 20      # GPIO pin for stepping
+# Define GPIO pins
+DIR_PIN = 20  # Use GPIO20 (pin 38) as defined in your setup
+STEP_PIN = 21  # Use GPIO21 (pin 40) as defined in your setup
 
+# Setup GPIO mode
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR_PIN, GPIO.OUT)
 GPIO.setup(STEP_PIN, GPIO.OUT)
 
-def test_motor(step_delay):
-    # Rotate right
-    GPIO.output(DIR_PIN, GPIO.HIGH)
-    for _ in range(200):  # Adjust 200 to fit the desired rotation steps
-        GPIO.output(STEP_PIN, GPIO.HIGH)
-        time.sleep(step_delay)
-        GPIO.output(STEP_PIN, GPIO.LOW)
-        time.sleep(step_delay)
-    time.sleep(1)
+# Set the direction (Clockwise or Counterclockwise)
+GPIO.output(DIR_PIN, GPIO.HIGH)  # HIGH for one direction, LOW for the opposite
 
-    # Rotate left
-    GPIO.output(DIR_PIN, GPIO.LOW)
-    for _ in range(200):  # Adjust 200 to fit the desired rotation steps
-        GPIO.output(STEP_PIN, GPIO.HIGH)
-        time.sleep(step_delay)
-        GPIO.output(STEP_PIN, GPIO.LOW)
-        time.sleep(step_delay)
-    time.sleep(1)
+# Set duration for motor run
+run_duration = 5  # in seconds
+start_time = time.time()
 
 try:
-    # Simple test loop with time limit
-    print("Testing motor...")
-    start_time = time.time()
-    while time.time() - start_time < 5:  # Run for 5 seconds
-        test_motor(step_delay=0.01)
-
+    while time.time() - start_time < run_duration:
+        # Perform one step
+        GPIO.output(STEP_PIN, GPIO.HIGH)
+        time.sleep(0.0005)  # 500 microseconds
+        GPIO.output(STEP_PIN, GPIO.LOW)
+        time.sleep(0.0005)  # 500 microseconds
+except KeyboardInterrupt:
+    print("Stopped by User")
 finally:
-    # Clean up GPIO pins
+    # Clean up the GPIO settings
     GPIO.cleanup()
-    print("GPIO cleanup complete.")
