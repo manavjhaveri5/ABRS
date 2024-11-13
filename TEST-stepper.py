@@ -2,8 +2,8 @@ import RPi.GPIO as GPIO
 import time
 
  ##PAN MOTOR
-DIR_PIN = 5  # DIR+
-STEP_PIN = 12  # PUL+
+#DIR_PIN = 5  # DIR+
+#STEP_PIN = 12  # PUL+
 
  ##TILT MOTOR
 DIR_PIN = 21  # DIR+
