@@ -22,42 +22,51 @@ current_direction = GPIO.HIGH
 GPIO.output(PAN_DIR_PIN, current_direction)
 
 # Duration for motor to run continuously when switches are untouched
-#run_duration = 5  # seconds
+run_duration = 5  # seconds
 
 # Function to control the pan motor
 def run_pan_motor():
-    while GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.HIGH and GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.HIGH:
+    while True:
         GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
         time.sleep(0.0010)  # Adjust step pulse duration as needed
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
         time.sleep(0.0010)
 
-# Function to reverse motor direction
-def reverse_motor_direction():
+# Function to reverse motor direction and restart after a delay
+def reverse_and_restart_motor():
     global current_direction
+    # Reverse direction
     current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
     GPIO.output(PAN_DIR_PIN, current_direction)
     print("Motor direction reversed")
+    
+    # Wait 1 second before restarting
+    time.sleep(1)
+    
+    # Restart the motor in the new direction
+    motor_thread = threading.Thread(target=run_pan_motor)
+    motor_thread.start()
+    return motor_thread
 
 # Run the pan motor in a thread
 try:
+    # Start the initial motor thread
+    motor_thread = threading.Thread(target=run_pan_motor)
+    motor_thread.start()
+
     while True:
-        # Check if limit switches are untouched
-        if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.HIGH and GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.HIGH:
-            # Start the pan motor thread if both switches are untouched
-            pan_thread = threading.Thread(target=run_pan_motor)
-            pan_thread.start()
+        # Check limit switches
+        if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW or GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
+            print("Limit switch activated; stopping motor and reversing direction")
             
-            # Wait for the motor to run for the specified duration
-            #time.sleep(run_duration)
+            # Stop the current motor thread
+            motor_thread.join()
             
-            # Stop the motor thread after the duration
-            pan_thread.join()
-        else:
-            # If a limit switch is touched, stop the motor and reverse direction
-            print("Limit switch activated; reversing motor direction")
-            reverse_motor_direction()
-            time.sleep(0.5)  # Adjust delay as needed
+            # Reverse direction and restart after delay
+            motor_thread = reverse_and_restart_motor()
+
+        # Short delay to prevent constant polling
+        time.sleep(0.1)
 
 except KeyboardInterrupt:
     print("Program terminated by User")
