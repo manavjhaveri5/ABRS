@@ -73,7 +73,7 @@ def stop_motor():
             motor_thread.join()
 
 # Function to reset motor to center when hitting a limit switch
-def reset_to_center(direction, duration=1.25):  # Reduced duration for faster reset
+def reset_to_center(direction, duration=2.1):  # Reduced duration for faster reset
     global resetting
     resetting = True
     stop_motor()  # Stop any ongoing motor movement
