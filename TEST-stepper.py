@@ -3,8 +3,8 @@ import time
 import threading
 
 # Define GPIO pins for the Pan motor
-PAN_DIR_PIN = 13  # DIR+
-PAN_STEP_PIN = 21  # PUL+
+PAN_DIR_PIN = 21  # DIR+
+PAN_STEP_PIN = 13  # PUL+
 
 # Setup GPIO mode
 GPIO.setmode(GPIO.BCM)
