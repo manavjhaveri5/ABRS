@@ -56,8 +56,8 @@ def start_motor(direction, distance):
     if not resetting:  # Only allow movement if not resetting
         GPIO.output(PAN_DIR_PIN, direction)
 
-        # Adjusted step delay for microstepping and smoother movement
-        step_delay = max(0.0003, min(0.001, distance / 8000))  # Adjust step delay range for faster microstepping
+        # Adjusted step delay for microstepping and 2x faster movement
+        step_delay = max(0.00015, min(0.0005, distance / 16000))  # Faster step delay range
 
         if not running:
             running = True
@@ -73,7 +73,7 @@ def stop_motor():
             motor_thread.join()
 
 # Function to reset motor to center when hitting a limit switch
-def reset_to_center(direction, duration=2.5):
+def reset_to_center(direction, duration=1.25):  # Reduced duration for faster reset
     global resetting
     resetting = True
     stop_motor()  # Stop any ongoing motor movement
@@ -81,9 +81,9 @@ def reset_to_center(direction, duration=2.5):
     start_time = time.time()
     while time.time() - start_time < duration:
         GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
-        time.sleep(0.0008)  # Shorter delay for faster, smoother reset
+        time.sleep(0.0004)  # Faster reset step delay
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
-        time.sleep(0.0008)
+        time.sleep(0.0004)
     resetting = False  # Reset complete
 
 # Function to process frames and detect movement
@@ -155,10 +155,10 @@ if __name__ == "__main__":
             # Check if a limit switch is pressed
             if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW:
                 print("Left limit switch activated; resetting to center")
-                reset_to_center(GPIO.HIGH, 2.1)  # Move clockwise for 2.5 seconds
+                reset_to_center(GPIO.HIGH, 1.25)  # Move clockwise for a shorter duration
             elif GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
                 print("Right limit switch activated; resetting to center")
-                reset_to_center(GPIO.LOW, 2.1)  # Move counterclockwise for 2.5 seconds
+                reset_to_center(GPIO.LOW, 1.25)  # Move counterclockwise for a shorter duration
 
             # Short delay to prevent constant polling
             time.sleep(1)
