@@ -54,55 +54,23 @@ def run_pan_motor():
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
         time.sleep(0.001)
 
-# Function to reverse motor direction and restart after a delay
-def reverse_and_restart_motor():
-    global current_direction, running, motor_thread
-    # Stop the motor
-    running = False
-    if motor_thread:
-        motor_thread.join()  # Wait for motor thread to stop
-
-    # Reverse direction
-    current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
-    GPIO.output(PAN_DIR_PIN, current_direction)
-    print("Motor direction reversed")
-
-    # Wait 1 second before restarting
-    time.sleep(1)
-    
-    # Restart the motor
-    running = True
-    motor_thread = threading.Thread(target=run_pan_motor)
-    motor_thread.start()
-
-# Function to control motor movement based on video
-def move_motor_left():
-    global running, motor_thread
+# Function to start motor in a specific direction
+def start_motor(direction):
+    global running, motor_thread, current_direction
+    GPIO.output(PAN_DIR_PIN, direction)
+    current_direction = direction
     if not running:
-        GPIO.output(PAN_DIR_PIN, GPIO.LOW)  # Set direction to left
         running = True
         motor_thread = threading.Thread(target=run_pan_motor)
         motor_thread.start()
-    else:
-        pulse_motor()
 
-def move_motor_right():
+# Function to stop the motor
+def stop_motor():
     global running, motor_thread
-    if not running:
-        GPIO.output(PAN_DIR_PIN, GPIO.HIGH)  # Set direction to right
-        running = True
-        motor_thread = threading.Thread(target=run_pan_motor)
-        motor_thread.start()
-    else:
-        pulse_motor()
-
-def pulse_motor():
-    start_time = time.time()
-    while time.time() - start_time < run_duration:
-        GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
-        time.sleep(0.001)  # Pulse duration; adjust for speed
-        GPIO.output(PAN_STEP_PIN, GPIO.LOW)
-        time.sleep(0.001)
+    if running:
+        running = False
+        if motor_thread:
+            motor_thread.join()
 
 # Function to process frames and detect movement
 def generate_frames():
@@ -133,12 +101,20 @@ def generate_frames():
                     if previous_center_x is not None:
                         movement = center_x - previous_center_x
                         if movement > movement_threshold:
-                            threading.Thread(target=move_motor_right).start()
+                            print("Moving right")
+                            start_motor(GPIO.HIGH)  # Move right
                         elif movement < -movement_threshold:
-                            threading.Thread(target=move_motor_left).start()
+                            print("Moving left")
+                            start_motor(GPIO.LOW)  # Move left
+                        else:
+                            stop_motor()  # Stop motor if no significant movement
                     
                     # Update the previous center_x position
                     previous_center_x = center_x
+                else:
+                    stop_motor()  # Stop motor if contour area is too small
+            else:
+                stop_motor()  # Stop motor if no contours found
 
             # Overlay mask onto frame for display
             mask_rgb = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
@@ -168,7 +144,10 @@ if __name__ == "__main__":
             # Check if a limit switch is pressed
             if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW or GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
                 print("Limit switch activated; stopping motor and reversing direction")
-                reverse_and_restart_motor()
+                stop_motor()
+                current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
+                GPIO.output(PAN_DIR_PIN, current_direction)
+                time.sleep(1)  # Delay before restarting in the opposite direction
 
             # Short delay to prevent constant polling
             time.sleep(0.1)
@@ -178,8 +157,6 @@ if __name__ == "__main__":
 
     finally:
         # Ensure the motor stops and GPIO is cleaned up
-        running = False
-        if motor_thread:
-            motor_thread.join()
+        stop_motor()
         cap.release()
         GPIO.cleanup()
