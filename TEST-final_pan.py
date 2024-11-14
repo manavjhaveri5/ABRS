@@ -36,10 +36,8 @@ GPIO.setup(LIMIT_SWITCH_1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(LIMIT_SWITCH_2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Motor control variables
-current_direction = GPIO.HIGH  # Initial direction for the motor
-GPIO.output(PAN_DIR_PIN, current_direction)
-movement_threshold = 10  # Threshold to detect significant movement
-previous_center_x = None  # For tracking the previous position of the object
+center_x = 150  # Target center x-coordinate
+tolerance = 10  # Tolerance range for centering
 run_duration = 0.1  # Duration for motor movement in seconds
 
 # Global variable to control motor state
@@ -56,9 +54,8 @@ def run_pan_motor():
 
 # Function to start motor in a specific direction
 def start_motor(direction):
-    global running, motor_thread, current_direction
+    global running, motor_thread
     GPIO.output(PAN_DIR_PIN, direction)
-    current_direction = direction
     if not running:
         running = True
         motor_thread = threading.Thread(target=run_pan_motor)
@@ -72,7 +69,22 @@ def stop_motor():
         if motor_thread:
             motor_thread.join()
 
-# Function to process frames and detect movement
+# Function to reverse motor direction after hitting a limit switch
+def reverse_direction():
+    global running
+    stop_motor()
+    # Reverse direction
+    if GPIO.input(PAN_DIR_PIN) == GPIO.HIGH:
+        GPIO.output(PAN_DIR_PIN, GPIO.LOW)
+    else:
+        GPIO.output(PAN_DIR_PIN, GPIO.HIGH)
+    # Restart the motor after a 1-second delay
+    time.sleep(1)
+    running = True
+    motor_thread = threading.Thread(target=run_pan_motor)
+    motor_thread.start()
+
+# Function to process frames and control movement based on target's position
 def generate_frames():
     global previous_center_x
     while True:
@@ -93,24 +105,20 @@ def generate_frames():
                 if area > min_contour_area:
                     # Draw bounding box and centroid
                     x, y, w, h = cv2.boundingRect(largest_contour)
-                    center_x = x + w // 2
+                    centroid_x = x + w // 2
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    cv2.circle(frame, (center_x, y + h // 2), 5, (0, 255, 0), -1)
+                    cv2.circle(frame, (centroid_x, y + h // 2), 5, (0, 255, 0), -1)
 
-                    # Determine direction based on movement
-                    if previous_center_x is not None:
-                        movement = center_x - previous_center_x
-                        if movement > movement_threshold:
-                            print("Moving right")
-                            start_motor(GPIO.HIGH)  # Move right
-                        elif movement < -movement_threshold:
-                            print("Moving left")
-                            start_motor(GPIO.LOW)  # Move left
-                        else:
-                            stop_motor()  # Stop motor if no significant movement
-                    
-                    # Update the previous center_x position
-                    previous_center_x = center_x
+                    # Determine if motor should move left, right, or stop to center the object
+                    if centroid_x < center_x - tolerance:
+                        print("Moving right to center")
+                        start_motor(GPIO.HIGH)  # Move right
+                    elif centroid_x > center_x + tolerance:
+                        print("Moving left to center")
+                        start_motor(GPIO.LOW)  # Move left
+                    else:
+                        print("Centered")
+                        stop_motor()  # Stop motor if within tolerance range
                 else:
                     stop_motor()  # Stop motor if contour area is too small
             else:
@@ -144,10 +152,7 @@ if __name__ == "__main__":
             # Check if a limit switch is pressed
             if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW or GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
                 print("Limit switch activated; stopping motor and reversing direction")
-                stop_motor()
-                current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
-                GPIO.output(PAN_DIR_PIN, current_direction)
-                time.sleep(1)  # Delay before restarting in the opposite direction
+                reverse_direction()
 
             # Short delay to prevent constant polling
             time.sleep(0.1)
