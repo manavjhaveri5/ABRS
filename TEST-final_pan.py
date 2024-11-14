@@ -153,10 +153,10 @@ if __name__ == "__main__":
             # Check if a limit switch is pressed
             if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW:
                 print("Left limit switch activated; resetting to center")
-                reset_to_center(GPIO.HIGH, 2.5)  # Move clockwise for 2.5 seconds
+                reset_to_center(GPIO.HIGH, 2)  # Move clockwise for 2.5 seconds
             elif GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
                 print("Right limit switch activated; resetting to center")
-                reset_to_center(GPIO.LOW, 2.5)  # Move counterclockwise for 2.5 seconds
+                reset_to_center(GPIO.LOW, 2)  # Move counterclockwise for 2.5 seconds
 
             # Short delay to prevent constant polling
             time.sleep(0.1)
