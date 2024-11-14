@@ -17,10 +17,11 @@ GPIO.setup(PAN_STEP_PIN, GPIO.OUT)
 GPIO.setup(LIMIT_SWITCH_1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(LIMIT_SWITCH_2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# Set direction for pan motor (Clockwise or Counterclockwise)
-GPIO.output(PAN_DIR_PIN, GPIO.HIGH)  # Set to HIGH for one direction, LOW for the opposite
+# Set initial direction for pan motor (Clockwise or Counterclockwise)
+current_direction = GPIO.HIGH
+GPIO.output(PAN_DIR_PIN, current_direction)
 
-# Set duration for motor to run continuously when switches are untouched
+# Duration for motor to run continuously when switches are untouched
 run_duration = 5  # seconds
 
 # Function to control the pan motor
@@ -30,6 +31,13 @@ def run_pan_motor():
         time.sleep(0.0010)  # Adjust step pulse duration as needed
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
         time.sleep(0.0010)
+
+# Function to reverse motor direction
+def reverse_motor_direction():
+    global current_direction
+    current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
+    GPIO.output(PAN_DIR_PIN, current_direction)
+    print("Motor direction reversed")
 
 # Run the pan motor in a thread
 try:
@@ -46,8 +54,9 @@ try:
             # Stop the motor thread after the duration
             pan_thread.join()
         else:
-            # If either limit switch is touched, stop the motor
-            print("Limit switch activated; motor stopped")
+            # If a limit switch is touched, stop the motor and reverse direction
+            print("Limit switch activated; reversing motor direction")
+            reverse_motor_direction()
             time.sleep(0.5)  # Adjust delay as needed
 
 except KeyboardInterrupt:
