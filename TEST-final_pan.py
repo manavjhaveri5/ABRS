@@ -56,10 +56,8 @@ def start_motor(direction, distance):
     if not resetting:  # Only allow movement if not resetting
         GPIO.output(PAN_DIR_PIN, direction)
 
-        # Calculate step delay based on the distance from the center (proportional control)
-        min_delay = 0.001  # Minimum delay for faster movement (far from center)
-        max_delay = 0.01   # Maximum delay for slower movement (near center)
-        step_delay = max(min_delay, min(max_delay, max_delay - (distance / 300)))  # Inverted proportional control
+        # Adjusted step delay for faster movement
+        step_delay = max(0.0005, min(0.003, distance / 4000))  # Tune this for faster speed
 
         if not running:
             running = True
@@ -83,9 +81,9 @@ def reset_to_center(direction, duration=2.5):
     start_time = time.time()
     while time.time() - start_time < duration:
         GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
-        time.sleep(0.002)  # Adjust these timings to make the reset smoother
+        time.sleep(0.0015)  # Adjusted for faster reset speed
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
-        time.sleep(0.002)
+        time.sleep(0.0015)
     resetting = False  # Reset complete
 
 # Function to process frames and detect movement
