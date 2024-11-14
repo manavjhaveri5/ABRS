@@ -49,7 +49,7 @@ try:
             pan_thread.start()
             
             # Wait for the motor to run for the specified duration
-            time.sleep(run_duration)
+            #time.sleep(run_duration)
             
             # Stop the motor thread after the duration
             pan_thread.join()
