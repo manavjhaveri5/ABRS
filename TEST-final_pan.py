@@ -57,7 +57,9 @@ def start_motor(direction, distance):
         GPIO.output(PAN_DIR_PIN, direction)
 
         # Calculate step delay based on the distance from the center (proportional control)
-        step_delay = max(0.001, min(0.005, distance / 3000))  # Tune this for smoothness
+        min_delay = 0.001  # Minimum delay for faster movement (far from center)
+        max_delay = 0.01   # Maximum delay for slower movement (near center)
+        step_delay = max(min_delay, min(max_delay, max_delay - (distance / 300)))  # Inverted proportional control
 
         if not running:
             running = True
