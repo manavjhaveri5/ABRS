@@ -27,8 +27,8 @@ min_contour_area = 500
 # GPIO setup for Pan Motor and Limit Switches
 PAN_DIR_PIN = 21    # Direction pin
 PAN_STEP_PIN = 13  # Step pin
-LIMIT_SWITCH_1_PIN = 20  # Replace with your actual GPIO pin number
-LIMIT_SWITCH_2_PIN = 16  # Replace with your actual GPIO pin number
+LIMIT_SWITCH_1_PIN = 20  # Replace with your actual GPIO pin number (left switch)
+LIMIT_SWITCH_2_PIN = 16  # Replace with your actual GPIO pin number (right switch)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PAN_DIR_PIN, GPIO.OUT)
 GPIO.setup(PAN_STEP_PIN, GPIO.OUT)
@@ -42,6 +42,7 @@ center_x_target = 150  # Target x-coordinate for the centroid
 center_tolerance = 20  # Allowable tolerance around the center_x_target
 running = False
 motor_thread = None
+resetting = False  # Flag to indicate if the motor is resetting to center
 
 # Function to control the pan motor
 def run_pan_motor():
@@ -54,12 +55,13 @@ def run_pan_motor():
 # Function to start motor in a specific direction
 def start_motor(direction):
     global running, motor_thread, current_direction
-    GPIO.output(PAN_DIR_PIN, direction)
-    current_direction = direction
-    if not running:
-        running = True
-        motor_thread = threading.Thread(target=run_pan_motor)
-        motor_thread.start()
+    if not resetting:  # Only allow movement if not resetting
+        GPIO.output(PAN_DIR_PIN, direction)
+        current_direction = direction
+        if not running:
+            running = True
+            motor_thread = threading.Thread(target=run_pan_motor)
+            motor_thread.start()
 
 # Function to stop the motor
 def stop_motor():
@@ -68,6 +70,20 @@ def stop_motor():
         running = False
         if motor_thread:
             motor_thread.join()
+
+# Function to reset motor to center when hitting a limit switch
+def reset_to_center(direction, duration=2.5):
+    global resetting
+    resetting = True
+    stop_motor()  # Stop any ongoing motor movement
+    GPIO.output(PAN_DIR_PIN, direction)
+    start_time = time.time()
+    while time.time() - start_time < duration:
+        GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
+        time.sleep(0.001)
+        GPIO.output(PAN_STEP_PIN, GPIO.LOW)
+        time.sleep(0.001)
+    resetting = False  # Reset complete
 
 # Function to process frames and detect movement
 def generate_frames():
@@ -87,7 +103,7 @@ def generate_frames():
                 largest_contour = max(contours, key=cv2.contourArea)
                 area = cv2.contourArea(largest_contour)
 
-                if area > min_contour_area:
+                if area > min_contour_area and not resetting:  # Only track if not resetting
                     # Draw bounding box and centroid
                     x, y, w, h = cv2.boundingRect(largest_contour)
                     center_x = x + w // 2
@@ -135,12 +151,12 @@ if __name__ == "__main__":
 
         while True:
             # Check if a limit switch is pressed
-            if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW or GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
-                print("Limit switch activated; stopping motor and reversing direction")
-                stop_motor()
-                current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
-                GPIO.output(PAN_DIR_PIN, current_direction)
-                time.sleep(1)  # Delay before restarting in the opposite direction
+            if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW:
+                print("Left limit switch activated; resetting to center")
+                reset_to_center(GPIO.HIGH, 2.5)  # Move clockwise for 2.5 seconds
+            elif GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
+                print("Right limit switch activated; resetting to center")
+                reset_to_center(GPIO.LOW, 2.5)  # Move counterclockwise for 2.5 seconds
 
             # Short delay to prevent constant polling
             time.sleep(0.1)
