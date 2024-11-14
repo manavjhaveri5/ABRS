@@ -38,11 +38,8 @@ GPIO.setup(LIMIT_SWITCH_2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # Motor control variables
 current_direction = GPIO.HIGH  # Initial direction for the motor
 GPIO.output(PAN_DIR_PIN, current_direction)
-movement_threshold = 10  # Threshold to detect significant movement
-previous_center_x = None  # For tracking the previous position of the object
-run_duration = 0.1  # Duration for motor movement in seconds
-
-# Global variable to control motor state
+center_x_target = 150  # Target x-coordinate for the centroid
+center_tolerance = 20  # Allowable tolerance around the center_x_target
 running = False
 motor_thread = None
 
@@ -97,20 +94,16 @@ def generate_frames():
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                     cv2.circle(frame, (center_x, y + h // 2), 5, (0, 255, 0), -1)
 
-                    # Determine direction based on movement (reverse logic)
-                    if previous_center_x is not None:
-                        movement = center_x - previous_center_x
-                        if movement > movement_threshold:
-                            print("Moving left")
-                            start_motor(GPIO.LOW)  # Move left when object moves right
-                        elif movement < -movement_threshold:
-                            print("Moving right")
-                            start_motor(GPIO.HIGH)  # Move right when object moves left
-                        else:
-                            stop_motor()  # Stop motor if no significant movement
-                    
-                    # Update the previous center_x position
-                    previous_center_x = center_x
+                    # Adjust motor based on center_x position
+                    if center_x < center_x_target - center_tolerance:
+                        print("Moving right to center")
+                        start_motor(GPIO.HIGH)  # Move right to center
+                    elif center_x > center_x_target + center_tolerance:
+                        print("Moving left to center")
+                        start_motor(GPIO.LOW)  # Move left to center
+                    else:
+                        print("Centered; motor stopped")
+                        stop_motor()  # Stop motor if within tolerance range
                 else:
                     stop_motor()  # Stop motor if contour area is too small
             else:
