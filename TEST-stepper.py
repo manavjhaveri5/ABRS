@@ -15,7 +15,7 @@ GPIO.setup(PAN_STEP_PIN, GPIO.OUT)
 GPIO.output(PAN_DIR_PIN, GPIO.HIGH)  # Set to HIGH for one direction, LOW for the opposite
 
 # Set duration for motor to run
-run_duration = 3  # in seconds
+run_duration = 5  # in seconds
 
 # Function to control pan motor
 def run_pan_motor():
