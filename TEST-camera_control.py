@@ -16,9 +16,9 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 
 # HSV color thresholding values for red
-hueLow, hueHigh = 170, 180
-satLow, satHigh = 70, 255
-valLow, valHigh = 50, 255
+hueLow, hueHigh = 168, 179
+satLow, satHigh = 101, 255
+valLow, valHigh = 45, 255
 min_contour_area = 500
 
 def generate_frames():
