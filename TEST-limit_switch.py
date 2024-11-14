@@ -16,13 +16,13 @@ try:
         if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW:
             print("Limit Switch 1: Touched")
         else:
-            print("Limit Switch 1: Untouched")
+            #print("Limit Switch 1: Untouched")
         
         # Check limit switch 2
         if GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
             print("Limit Switch 2: Touched")
         else:
-            print("Limit Switch 2: Untouched")
+            #print("Limit Switch 2: Untouched")
         
         time.sleep(0.5)  # Adjust delay as needed
 
