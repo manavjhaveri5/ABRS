@@ -56,8 +56,8 @@ def start_motor(direction, distance):
     if not resetting:  # Only allow movement if not resetting
         GPIO.output(PAN_DIR_PIN, direction)
 
-        # Adjusted step delay for faster movement
-        step_delay = max(0.0005, min(0.003, distance / 4000))  # Tune this for faster speed
+        # Adjusted step delay for microstepping and smoother movement
+        step_delay = max(0.0003, min(0.001, distance / 8000))  # Adjust step delay range for faster microstepping
 
         if not running:
             running = True
@@ -81,9 +81,9 @@ def reset_to_center(direction, duration=2.5):
     start_time = time.time()
     while time.time() - start_time < duration:
         GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
-        time.sleep(0.0015)  # Adjusted for faster reset speed
+        time.sleep(0.0008)  # Shorter delay for faster, smoother reset
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
-        time.sleep(0.0015)
+        time.sleep(0.0008)
     resetting = False  # Reset complete
 
 # Function to process frames and detect movement
