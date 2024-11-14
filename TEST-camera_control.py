@@ -25,8 +25,8 @@ valLow, valHigh = 45, 255
 min_contour_area = 500
 
 # GPIO setup for Pan Motor
-PAN_DIR_PIN = 13    # Direction pin
-PAN_STEP_PIN = 21  # Step pin
+PAN_DIR_PIN = 21    # Direction pin
+PAN_STEP_PIN = 13  # Step pin
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PAN_DIR_PIN, GPIO.OUT)
 GPIO.setup(PAN_STEP_PIN, GPIO.OUT)
