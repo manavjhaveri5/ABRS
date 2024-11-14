@@ -159,7 +159,7 @@ if __name__ == "__main__":
                 reset_to_center(GPIO.LOW, 2)  # Move counterclockwise for 2.5 seconds
 
             # Short delay to prevent constant polling
-            time.sleep(0.1)
+            time.sleep(1)
 
     except KeyboardInterrupt:
         print("Program terminated by User")
