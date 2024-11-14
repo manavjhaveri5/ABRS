@@ -21,6 +21,10 @@ GPIO.setup(LIMIT_SWITCH_2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 current_direction = GPIO.HIGH
 GPIO.output(PAN_DIR_PIN, current_direction)
 
+# Global variable to control the motor thread
+running = True
+motor_thread = None
+
 # Function to control the pan motor
 def run_pan_motor():
     while running:
@@ -31,7 +35,7 @@ def run_pan_motor():
 
 # Function to reverse motor direction and restart after a delay
 def reverse_and_restart_motor():
-    global current_direction, running
+    global current_direction, running, motor_thread
     # Stop the motor
     running = False
     motor_thread.join()  # Wait for motor thread to stop
@@ -52,7 +56,6 @@ def reverse_and_restart_motor():
 # Main logic to monitor limit switches and control motor direction
 try:
     # Start the initial motor thread
-    running = True
     motor_thread = threading.Thread(target=run_pan_motor)
     motor_thread.start()
 
