@@ -43,7 +43,7 @@ previous_center_x = None  # For tracking the previous position of the object
 run_duration = 0.1  # Duration for motor movement in seconds
 
 # Global variable to control motor state
-running = True
+running = False
 motor_thread = None
 
 # Function to control the pan motor
@@ -59,7 +59,8 @@ def reverse_and_restart_motor():
     global current_direction, running, motor_thread
     # Stop the motor
     running = False
-    motor_thread.join()  # Wait for motor thread to stop
+    if motor_thread:
+        motor_thread.join()  # Wait for motor thread to stop
 
     # Reverse direction
     current_direction = GPIO.LOW if current_direction == GPIO.HIGH else GPIO.HIGH
@@ -76,12 +77,24 @@ def reverse_and_restart_motor():
 
 # Function to control motor movement based on video
 def move_motor_left():
-    GPIO.output(PAN_DIR_PIN, GPIO.LOW)  # Set direction to left
-    pulse_motor()
+    global running, motor_thread
+    if not running:
+        GPIO.output(PAN_DIR_PIN, GPIO.LOW)  # Set direction to left
+        running = True
+        motor_thread = threading.Thread(target=run_pan_motor)
+        motor_thread.start()
+    else:
+        pulse_motor()
 
 def move_motor_right():
-    GPIO.output(PAN_DIR_PIN, GPIO.HIGH)  # Set direction to right
-    pulse_motor()
+    global running, motor_thread
+    if not running:
+        GPIO.output(PAN_DIR_PIN, GPIO.HIGH)  # Set direction to right
+        running = True
+        motor_thread = threading.Thread(target=run_pan_motor)
+        motor_thread.start()
+    else:
+        pulse_motor()
 
 def pulse_motor():
     start_time = time.time()
@@ -147,10 +160,6 @@ def video_feed():
 # Main entry point
 if __name__ == "__main__":
     try:
-        # Start the initial motor thread
-        motor_thread = threading.Thread(target=run_pan_motor)
-        motor_thread.start()
-
         # Run the Flask app in a separate thread
         flask_thread = threading.Thread(target=app.run, kwargs={'host': '0.0.0.0', 'port': 8080})
         flask_thread.start()
@@ -170,6 +179,7 @@ if __name__ == "__main__":
     finally:
         # Ensure the motor stops and GPIO is cleaned up
         running = False
-        motor_thread.join()
+        if motor_thread:
+            motor_thread.join()
         cap.release()
         GPIO.cleanup()
