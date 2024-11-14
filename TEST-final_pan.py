@@ -96,11 +96,11 @@ def generate_frames():
 
                     # Adjust motor based on center_x position
                     if center_x < center_x_target - center_tolerance:
-                        print("Moving right to center")
-                        start_motor(GPIO.HIGH)  # Move right to center
-                    elif center_x > center_x_target + center_tolerance:
                         print("Moving left to center")
                         start_motor(GPIO.LOW)  # Move left to center
+                    elif center_x > center_x_target + center_tolerance:
+                        print("Moving right to center")
+                        start_motor(GPIO.HIGH)  # Move right to center
                     else:
                         print("Centered; motor stopped")
                         stop_motor()  # Stop motor if within tolerance range
