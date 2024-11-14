@@ -1,56 +1,33 @@
-"""
-This Raspberry Pi code was developed by newbiely.com
-This Raspberry Pi code is made available for public use without any restriction
-For comprehensive instructions and wiring diagrams, please visit:
-https://newbiely.com/tutorials/raspberry-pi/raspberry-pi-limit-switch
-"""
-
-
 import RPi.GPIO as GPIO
+import time
 
-# Set the GPIO mode to BCM
+# Define GPIO pins for limit switches
+LIMIT_SWITCH_1_PIN = 20  # Replace with your actual GPIO pin number
+LIMIT_SWITCH_2_PIN = 16  # Replace with your actual GPIO pin number
+
+# Setup
 GPIO.setmode(GPIO.BCM)
-
-# Define the GPIO pin for your button
-#SWITCH_PIN = 19 #SWITCH 1
-SWITCH_PIN = 26 #SWITCH 2
-
-# Define debounce time in milliseconds
-DEBOUNCE_TIME_MS = 200  # 200 milliseconds
-
-# Set the initial state and pull-up resistor for the button
-GPIO.setup(SWITCH_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-# Initialize the button state and previous state
-switch_state = GPIO.input(SWITCH_PIN)
-prev_switch_state = switch_state
-
-# Define a function to handle button presses
-def button_callback(channel):
-    global switch_state
-    switch_state = GPIO.input(SWITCH_PIN)
-
-# Add an event listener for the button press
-GPIO.add_event_detect(SWITCH_PIN, GPIO.BOTH, callback=button_callback, bouncetime=DEBOUNCE_TIME_MS)
+GPIO.setup(LIMIT_SWITCH_1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(LIMIT_SWITCH_2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 try:
-    # Main loop
     while True:
-        # Check if the button state has changed
-        if switch_state != prev_switch_state:
-            if switch_state == GPIO.HIGH:
-                print("UNTOUCHED")
-            else:
-                print("TOUCHED")
-            
-            prev_switch_state = switch_state
-
-
-        if switch_state == GPIO.HIGH:
-            print("UNTOUCHED")
+        # Check limit switch 1
+        if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW:
+            print("Limit Switch 1: Touched")
         else:
-            print(" TOUCHED")
+            print("Limit Switch 1: Untouched")
+        
+        # Check limit switch 2
+        if GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
+            print("Limit Switch 2: Touched")
+        else:
+            print("Limit Switch 2: Untouched")
+        
+        time.sleep(0.5)  # Adjust delay as needed
 
 except KeyboardInterrupt:
-    # Clean up GPIO on exit
+    print("Program terminated")
+
+finally:
     GPIO.cleanup()
