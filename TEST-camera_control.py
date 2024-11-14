@@ -44,7 +44,7 @@ def generate_frames():
 
                     # Calculate and print centroid
                     center_x, center_y = x + w // 2, y + h // 2
-                    print(f"Centroid: ({center_x}, {center_y})")
+                    print(f"Centroid: ({center_x})")
 
                     # Draw centroid point
                     cv2.circle(frame, (center_x, center_y), 5, (0, 255, 0), -1)
