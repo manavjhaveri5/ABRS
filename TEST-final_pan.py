@@ -42,7 +42,7 @@ running = False
 motor_thread = None
 resetting = False  # Flag to indicate if the motor is resetting to center
 
-# Function to control the pan motor with adjustable speed
+# Function to control the pan motor with slower adjustable speed
 def run_pan_motor(step_delay):
     while running:
         GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
@@ -56,8 +56,8 @@ def start_motor(direction, distance):
     if not resetting:  # Only allow movement if not resetting
         GPIO.output(PAN_DIR_PIN, direction)
 
-        # Adjusted step delay for microstepping and 2x faster movement
-        step_delay = max(0.00015, min(0.0005, distance / 16000))  # Faster step delay range
+        # Adjusted step delay for 30% slower movement
+        step_delay = max(0.0002, min(0.00065, distance / 12000))  # Slower step delay range
 
         if not running:
             running = True
@@ -73,7 +73,7 @@ def stop_motor():
             motor_thread.join()
 
 # Function to reset motor to center when hitting a limit switch
-def reset_to_center(direction, duration=2.1):  # Reduced duration for faster reset
+def reset_to_center(direction, duration=2.7):  # Increased duration for slower reset
     global resetting
     resetting = True
     stop_motor()  # Stop any ongoing motor movement
@@ -81,9 +81,9 @@ def reset_to_center(direction, duration=2.1):  # Reduced duration for faster res
     start_time = time.time()
     while time.time() - start_time < duration:
         GPIO.output(PAN_STEP_PIN, GPIO.HIGH)
-        time.sleep(0.0004)  # Faster reset step delay
+        time.sleep(0.0005)  # Slightly slower reset step delay
         GPIO.output(PAN_STEP_PIN, GPIO.LOW)
-        time.sleep(0.0004)
+        time.sleep(0.0005)
     resetting = False  # Reset complete
 
 # Function to process frames and detect movement
@@ -155,10 +155,10 @@ if __name__ == "__main__":
             # Check if a limit switch is pressed
             if GPIO.input(LIMIT_SWITCH_1_PIN) == GPIO.LOW:
                 print("Left limit switch activated; resetting to center")
-                reset_to_center(GPIO.HIGH, 1.25)  # Move clockwise for a shorter duration
+                reset_to_center(GPIO.HIGH, 2.7)  # Move clockwise for slower duration
             elif GPIO.input(LIMIT_SWITCH_2_PIN) == GPIO.LOW:
                 print("Right limit switch activated; resetting to center")
-                reset_to_center(GPIO.LOW, 1.25)  # Move counterclockwise for a shorter duration
+                reset_to_center(GPIO.LOW, 2.7)  # Move counterclockwise for slower duration
 
             # Short delay to prevent constant polling
             time.sleep(1)
