@@ -22,7 +22,7 @@ current_direction = GPIO.HIGH
 GPIO.output(PAN_DIR_PIN, current_direction)
 
 # Duration for motor to run continuously when switches are untouched
-run_duration = 5  # seconds
+#run_duration = 5  # seconds
 
 # Function to control the pan motor
 def run_pan_motor():
