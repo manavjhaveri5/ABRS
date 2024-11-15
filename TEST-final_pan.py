@@ -40,7 +40,7 @@ center_x_target = 150  # Target x-coordinate for the centroid
 center_tolerance = 30  # Allowable tolerance around the center_x_target for smoother movement
 running = False
 motor_thread = None
-resetting = False  # Flag to indicate if the motor is resetting to center
+resetting = False  
 
 # Function to control the pan motor with slower adjustable speed
 def run_pan_motor(step_delay):
@@ -55,8 +55,6 @@ def start_motor(direction, distance):
     global running, motor_thread
     if not resetting:  # Only allow movement if not resetting
         GPIO.output(PAN_DIR_PIN, direction)
-
-        # Adjusted step delay for 30% slower movement
         step_delay = max(0.0002, min(0.00065, distance / 12000))  # Slower step delay range
 
         if not running:
